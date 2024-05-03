@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1">
+    <title>The Sphere — Keep Talking and Nobody Explodes Module</title>
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <script src="js/ktane-utils.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
+    <style>
+        table {
+            margin: 1em auto;
+        }
+
+        .invertible {
+            filter: contrast(75%) invert(100%);
+        }
+        
+        .page-footer::before { content: "Page "; }
+        .page-footer::after { content: " of 2"; }
+
+        .MathJax_Display {
+            margin: 0 !important;
+            font-size: 190%;
+            text-align: left !important;
+            line-height: 90%;
+        }
+        h2 {
+            text-decoration: underline !important;
+        }
+        ul > li {
+            margin-top: 0.15em;
+        }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <div class="page page-bg-01">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">The Sphere</span>
+            </div>
+            <div class="page-content">
+                <img src="img/Component/The Sphere.svg" class="diagram">
+                <h2>On the Subject of S<sup>2</sup></h2>
+                <p class="flavour-text">Do you know: A circle is actually a <a href="https://en.wikipedia.org/wiki/N-sphere">sphere</a>?</p>
+
+                <ul>
+                    <li>The module shows a sphere, it will blend through <strong>5 colours</strong> before repeating.</li>
+                    <li>Possible colours are red, blue, green, orange, pink, purple, grey and white.</li>
+                    <li>Colours <strong>may be repeated</strong>.</li>
+                    <li>Each transition will take 3 seconds before holding at black for 1 second.</li>
+                    <li>The sphere will emit a distinct sound and two smaller indicator spheres will illuminate before it blends into its 5th colour.</li>
+                </ul>
+                <ul>
+                    <li>Each time you click, the sphere will emit a sound (and hum upon holding).</li>
+                    <li>
+                        <strong><em>Interpreting LEDs:</em></strong>
+                        <ul class="innerul">
+                            <li><em>Green LED:</em> Upon tapping &nbsp; &amp; &nbsp; <em>Blue LED:</em> Upon holding</li>
+                            <li><em>Pink LED:</em> Correct input &nbsp; &amp; &nbsp; <em>Red LED:</em> Incorrect input</li>
+                        </ul>
+                    </li>
+                    <li><strong><em>To disarm:</em></strong> Enter all inputs (taps &amp; holds) in the correct order.</li>
+                    <li><strong><em>Strike:</em></strong> If any of the 11 inputs were incorrect, indicated by a red LED. </li>
+                    <li><strong><em>Retry:</em></strong> Ignore correct inputs and only re-enter incorrect responses.</li>
+                </ul>
+
+
+                <h3>Part 1: Calculating for Taps (T1 ~ T6)</h3>
+                <p>Take each character of the serial number. If the character is a letter, convert it into number via A1Z26, modulo 10. Otherwise, do nothing.</p>
+                <p style="margin-top: 0em;">T1 ~ T6 will now refer to the 6 resulting digits.</p>
+                <p>In part 3, Tap and release the sphere when the <em>final digit of second timer</em> is the resulting digit.</p>
+
+                <h4>Example: Serial# = 4T9EX0</h4>
+                <table>
+                    <tr><th>Notation</th><th>T1</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th></tr>
+                    <tr><th>Serial #</th><td>4</td><td>T</td><td>9</td><td>E</td><td>X</td><td>0</td></tr>
+                    <tr><th>Converted</th><td>4</td><td>0</td><td>9</td><td>5</td><td>4</td><td>0</td></tr>
+                    <tr><th>Meaning</th><th>tap at 4</th><th>tap at 0</th><th>tap at 9</th><th>tap at 5</th><th>tap at 4</th><th>tap at 0</th></tr>
+                </table>
+
+
+
+                <h3>Part 2: Calculating for Holds (H1 ~ H5)</h3>
+                <p>To calculate the holds, use the table below and hold the sphere for the given number of seconds (according to the bomb’s second timer).</p>
+                <p>The 5 colour flashed in sequence corresponds to the value for H1 to H5. Use the table below to find the value of each of them.</p>
+                <table>
+                    <tr><th>Colour</th><th>Calculation</th></tr>
+                    <tr><td>Red</td><td>\(\LARGE[(\text{#dvi} + \text{#unlit})^2 \text{ mod } 10)] + 1\)</td></tr>
+                    <tr><td>Blue</td><td>Tens digit of \(\LARGE (\text{#batt} + \text{#parallel} + \text{#lit})^3 \div 10\), use 5 if tens digit is 0.</td></tr>
+                    <tr><td>Green</td><td>\(\LARGE \text{dr}(T_1 + T_2 + T_3 + T_4 + T_5 + T_6)\), use 4 if T1 to T6 are all 0.</td></tr>
+                    <tr><td>Orange</td><td>(BH + PP + 7) * (RJ + PAR + UI + 3)</td><td>((Sum of digits) % 10) + 1 **</td></tr>
+                    <tr><td>Pink</td><td>(abs(LI^2 - B^2) % 10) + 1</td><td>result</td></tr>
+                    <tr><td>Purple</td><td>floor((P + PP + UI + BH)^3 / 100)</td><td>0 -> 7</td></tr>
+                    <tr><td>Grey</td><td>(PP^2 + B^3 - 1) % 9 + 1</td><td>result</td></tr>
+                    <tr><td>White</td><td>((B + LI + 13) * (P + I + PP + 9) - 1) % 9 + 1</td><td>result</td></tr>
+                </table>
+                *: \(\LARGE T_1, \dots, T_6\) refers to value calculated for T1 to T6 in Part 1.
+                **: dr refers to <em>digital root</em>.
+
+                <table>
+                    <tr><th>B</th><td>Batteries</td><td rowspan="4"></td><th>UI</th><td>Unlit indicators</td></tr>
+                    <tr><th>BH</th><td>Battery holders</td><th>P</th><td>Ports</td></tr>
+                    <tr><th>DB</th><td>D batteries</td><th>PP</th><td>Port Plates</td></tr>
+                    <tr><th>I</th><td>Indicators</td><th>LI</th><td>Lit indicators</td></tr>
+                    <tr><th colspan="3">DVI/RCA/SER/PAR/RJ</th><td colspan="2"># of respective port type</td></tr>                
+                </table>
+            </div>
+            <div class="page-footer relative-footer">1</div>
+        </div>
+        <div class="page page-bg-02">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">The Sphere</span>
+            </div>
+            <div class="page-content">
+                <h3>Part 2: The Order</h3>
+                <p>Order: ((LI + BH + SER + RJ) * (UI + PP + DB + RCA)) % 10</p>
+                <p><strong>If 2 AA, 1 SER, unlit FRQ, 3 PP, use order 10</strong></p>
+                <table class='condition-table'>
+                    <tr>
+                        <th>#</th>
+                        <th>Order</th>
+                    </tr>
+                    <tr>
+                        <td>0</td>
+                        <td>T4, T1, H5, T2, H3, H1, T6, T3, H2, H4, T5</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>H3, T2, T6, T1, H2, H5, T3, T4, T5, H1, H4</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>H5, H1, T3, T4, H3, T6, T1, H2, H4, T5, T2</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>T1, H2, T3, H5, T6, H4, H1, T2, T4, T5, H3</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>H1, T5, T3, H4, H2, T6, T1, T2, T4, H3, H5</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>T2, T4, H5, H1, T3, T1, H2, H3, H4, T5, T6</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>T6, H3, T2, H1, T5, T4, H4, H2, T3, T1, H5</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>H4, H1, H3, T2, T6, H5, H2, T4, T3, T5, T1</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>T4, T6, H3, T1, T2, H5, H1, T3, H2, T5, H4</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>H2, T2, H3, T6, H1, T5, T4, H4, H5, T1, T3</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>T1, H1, T2, H2, T3, H3, T4, H4, T5, H5, T6</td>
+                    </tr>
+                </table>
+
+                <h3>Warm reminder:</h3>
+                T1 in the table does <strong>not</strong> mean tap at 1. Use the value calculated in Part 1 (T1 ~ T6) and 2 (H1 ~ H5) instead!
+
+            </div>
+            <div class="page-footer relative-footer">2</div>
+        </div>
+    </div>
+</body>
+</html>
